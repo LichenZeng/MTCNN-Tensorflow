@@ -102,32 +102,40 @@ def main(args):
                         feed_dict={
                             'Placeholder_2:0': img})
 
-                start_time = time.time()
-                rectangles, points = detect_face(img, args.minsize,
-                                                 pnet_fun, rnet_fun, onet_fun,
-                                                 args.threshold, args.factor)
-                duration = time.time() - start_time
+                cap = cv2.VideoCapture(0)
+                while cap.isOpened():
+                    ret, img = cap.read()
 
-                print(duration)
-                print(type(rectangles))
-                points = np.transpose(points)
-                for rectangle in rectangles:
-                    cv2.putText(img, str(rectangle[4]),
-                                (int(rectangle[0]), int(rectangle[1])),
-                                cv2.FONT_HERSHEY_SIMPLEX,
-                                0.5, (0, 255, 0))
-                    cv2.rectangle(img, (int(rectangle[0]), int(rectangle[1])),
-                                  (int(rectangle[2]), int(rectangle[3])),
-                                  (255, 0, 0), 1)
-                for point in points:
-                    for i in range(0, 10, 2):
-                        cv2.circle(img, (int(point[i]), int(
-                            point[i + 1])), 2, (0, 255, 0))
-                cv2.imshow("test", img)
-                if args.save_image:
-                    cv2.imwrite(args.save_name, img)
-                if cv2.waitKey(0) & 0xFF == ord('q'):
-                    cv2.destroyAllWindows()
+                    start_time = time.time()
+                    rectangles, points = detect_face(img, args.minsize,
+                                                     pnet_fun, rnet_fun, onet_fun,
+                                                     args.threshold, args.factor)
+                    duration = time.time() - start_time
+
+                    print(duration)
+                    print(type(rectangles))
+                    points = np.transpose(points)
+                    for rectangle in rectangles:
+                        cv2.putText(img, str(rectangle[4]),
+                                    (int(rectangle[0]), int(rectangle[1])),
+                                    cv2.FONT_HERSHEY_SIMPLEX,
+                                    0.5, (0, 255, 0))
+                        cv2.rectangle(img, (int(rectangle[0]), int(rectangle[1])),
+                                      (int(rectangle[2]), int(rectangle[3])),
+                                      (255, 0, 0), 1)
+                    for point in points:
+                        for i in range(0, 10, 2):
+                            cv2.circle(img, (int(point[i]), int(
+                                point[i + 1])), 2, (0, 255, 0))
+                    cv2.imshow("test", img)
+                    if args.save_image:
+                        cv2.imwrite(args.save_name, img)
+                    k = cv2.waitKey(1)
+                    # press "q" to exit
+                    if (k & 0xff == ord('q')):
+                        break
+                cap.release()
+                cv2.destroyAllWindows()
 
 
 def parse_arguments(argv):
@@ -135,7 +143,8 @@ def parse_arguments(argv):
     parser = argparse.ArgumentParser()
 
     parser.add_argument('image_path', type=str,
-                        help='The image path of the testing image')
+                        help='The image path of the testing image',
+                        default="images/test2.jpg")
     parser.add_argument('--model_dir', type=str,
                         help='The directory of trained model',
                         default='./save_model/all_in_one/')
@@ -159,4 +168,4 @@ def parse_arguments(argv):
 
 
 if __name__ == '__main__':
-    main(parse_arguments(sys.argv[1:]))
+    main(parse_arguments(sys.argv))
