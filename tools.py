@@ -524,3 +524,8 @@ def convert_to_square(bbox):
     square_bbox[:, 2] = square_bbox[:, 0] + max_side - 1
     square_bbox[:, 3] = square_bbox[:, 1] + max_side - 1
     return square_bbox
+
+
+def print_dbg(args, isdbg=False):
+    if isdbg:
+        print("DBG:", args)

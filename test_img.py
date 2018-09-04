@@ -29,11 +29,12 @@ import cv2
 import numpy as np
 
 from src.mtcnn import PNet, RNet, ONet
-from tools import detect_face, get_model_filenames
+from tools import detect_face, get_model_filenames, print_dbg
 
 
 def main(args):
 
+    print_dbg(args, DBG)
     img = cv2.imread(args.image_path)
     file_paths = get_model_filenames(args.model_dir)
     with tf.device('/gpu:0'):
@@ -102,10 +103,10 @@ def main(args):
                         feed_dict={
                             'Placeholder_2:0': img})
 
-                cap = cv2.VideoCapture(0)
-                while cap.isOpened():
-                    ret, img = cap.read()
-
+                # cap = cv2.VideoCapture(0)
+                # while cap.isOpened():
+                #     ret, img = cap.read()
+                for i in range(1):
                     start_time = time.time()
                     rectangles, points = detect_face(img, args.minsize,
                                                      pnet_fun, rnet_fun, onet_fun,
@@ -130,11 +131,11 @@ def main(args):
                     cv2.imshow("test", img)
                     if args.save_image:
                         cv2.imwrite(args.save_name, img)
-                    k = cv2.waitKey(1)
+                    k = cv2.waitKey(0)
                     # press "q" to exit
                     if (k & 0xff == ord('q')):
                         break
-                cap.release()
+                # cap.release()
                 cv2.destroyAllWindows()
 
 
@@ -144,7 +145,7 @@ def parse_arguments(argv):
 
     parser.add_argument('image_path', type=str,
                         help='The image path of the testing image',
-                        default="images/test2.jpg")
+                        default='./images/test2.jpg')
     parser.add_argument('--model_dir', type=str,
                         help='The directory of trained model',
                         default='./save_model/all_in_one/')
@@ -167,5 +168,10 @@ def parse_arguments(argv):
     return parser.parse_args(argv)
 
 
+DBG = True
 if __name__ == '__main__':
-    main(parse_arguments(sys.argv))
+    arv = sys.argv
+    print_dbg(arv, DBG)
+    arv = arv + ["./images/test2.jpg"]
+    print_dbg(arv, DBG)
+    main(parse_arguments(arv[1:]))
