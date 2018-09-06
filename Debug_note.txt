@@ -1,0 +1,42 @@
+Author: lichen_zeng@sina.cn
+Date: 20180906
+Subject: Note some debug detail
+
+
+1, 测试样本的比例也挺重要的
+
+
+2, 在Tensorflow中，将测试样本保存为tfrecord方式
+    filename_cls = 'pnet_data_for_cls.tfrecords'
+    writer = tf.python_io.TFRecordWriter(filename_cls)
+
+        example = tf.train.Example(features=tf.train.Features(feature={
+            'label_raw': bytes_feature(label_raw),
+            'image_raw': bytes_feature(image_raw)}))
+        examples.append(example)
+    print(len(examples))
+    random.shuffle(examples)
+    for example in examples:
+        writer.write(example.SerializeToString())
+    writer.close()
+
+
+3, 巧用 one-hot 模式
+
+
+4， 巧用 logVar , delta = exp(logVar)
+
+
+5， 可以通过如下方式运行需要传参的Python脚本
+    argv = sys.argv
+    print_dbg(argv, DBG)
+    argv = argv + ["./images/test2.jpg"]
+    print_dbg(argv, DBG)
+    main(parse_arguments(argv[1:]))
+
+
+6，基础知识很重要，简直看不懂
+    pnet = tf.Graph()
+    with pnet.as_default():
+        with tf.device(device):
+            train_net()
